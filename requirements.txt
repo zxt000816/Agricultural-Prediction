@@ -1,0 +1,2 @@
+pytorch_forecasting
+pytorch_lightning == 1.6

@@ -4,6 +4,7 @@ from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import GridSearchCV
 from .prepare import read_best_params, save_best_params
+import pmdarima as pm
 
 def file_name_formator(product, attribute, model_name, raw):
     return f"{product}_{attribute}_{model_name}__({raw}).json"
@@ -35,6 +36,10 @@ def best_ml(X, y, model, params, base_dir, product, attribute, model_name, raw, 
         save_best_params(model.best_params_, file_path)
 
     return model, params if file_existed else model.best_params_
+
+def autoregressive_integrated_moving_average(y_train):
+    model = pm.auto_arima(y_train, error_action='ignore', suppress_warnings=True, stepwise=False, seasonal=False)
+    return model
 
 def linear_regression(X, y):
     model = LinearRegression()
