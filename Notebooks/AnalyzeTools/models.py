@@ -97,15 +97,6 @@ def gradient_boosting(X, y, search=False, **params):
     model, best_params = best_ml(X, y, model, parameters, base_dir, product, attribute, 'GB', raw, save)
     return model, best_params 
 
-def arima(X, y, **params):
-    pass
-
-def transformer(X, y, **params):
-    pass
-
-def cnn():
-    pass
-
 def lstm(X, y, **params):
     hidden_sz = params.get("hidden_sz") if params.get("hidden_sz") else 64
     number_layers = params.get("num_layers") if params.get("num_layers") else 1

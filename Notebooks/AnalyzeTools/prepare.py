@@ -25,6 +25,7 @@ def vis_result(Y_true, Y_predict):
     plt.figure(figsize=(10, 6))
     plt.plot(Y_true, label='Actual')
     plt.plot(Y_predict, label='Predict')
+    plt.legend()
     plt.show()
 
 def best_dl(X_train, y_train, X_test, y_test, _model, **others):
@@ -113,21 +114,24 @@ def make_dataset(X_arr, y_arr, future, past):
         y.append(y_arr[i+future-1, [-1]])
     return np.array(X, dtype=np.float16), np.array(y, dtype=np.float16)
 
-def filterSameColumns(dataframe, cols, shreshold=0.8):
-    length = len(cols)
-    if length < 3:
-        return cols
+def pathForSavingModels(product, product_attribute, raw_file_name, model):
+    current_work_path = os.getcwd()
+    save_path = f"{current_work_path}/Models/{product}/{product_attribute}/{raw_file_name}/{model}"
 
-    filter = np.array([True for i in range(length)])
-    for i in range(length):
-        for j in range(i+1, length):
-            col1, col2 = cols[i], cols[j]
-            percentage = (dataframe[col1] == dataframe[col2]).sum() / len(dataframe)
-            if percentage > shreshold:
-                if j == length - 1:
-                    filter[i] = False
-                else:
-                    filter[j] = False
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
 
-    return np.array(cols)[filter].tolist()[:-1]
+    return save_path
 
+def retriveBestModelPath(model_path):
+    default = "/lightning_logs/version_0/checkpoints"
+    try:
+        length = len(os.listdir(model_path + default))
+    except FileNotFoundError:
+        return False
+
+    if length != 0:
+        model_path = model_path + f"{default}/" + os.listdir(model_path + default)[0]
+        return model_path
+    
+    return False
