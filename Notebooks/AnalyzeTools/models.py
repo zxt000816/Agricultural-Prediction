@@ -6,11 +6,16 @@ from sklearn.model_selection import GridSearchCV
 from .prepare import read_best_params, save_best_params
 import pmdarima as pm
 
-def file_name_formator(product, attribute, model_name, raw):
-    return f"{product}_{attribute}_{model_name}__({raw}).json"
+def file_saver(base_dir, product, attribute, model_name, raw):
+    file_name = f"Best_{model_name}.json"
 
-def file_path_formator(base_dir, file_name):
-    return f"{base_dir}/{file_name}"
+    root_dir = os.getcwd()
+    save_dir = f"{root_dir}/{base_dir}/{product}/{attribute}/{raw}/{model_name}"
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    return f"{save_dir}/{file_name}"
 
 def params_extractor(_dict):
     parameters = _dict.get('parameters')
@@ -22,8 +27,7 @@ def params_extractor(_dict):
     return parameters, base_dir, product, attribute, raw, save
 
 def best_ml(X, y, model, params, base_dir, product, attribute, model_name, raw, save=True):
-    file_name = file_name_formator(product, attribute, model_name, raw)
-    file_path = file_path_formator(base_dir, file_name)
+    file_path = file_saver(base_dir, product, attribute, model_name, raw)
     file_existed = os.path.exists(file_path)
 
     if file_existed:
