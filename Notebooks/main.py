@@ -11,7 +11,7 @@ from AnalyzeTools.preprocess import preprocessData
 from AnalyzeTools.superModels import DEEPAR, TFT, RNN
 
 ''' Read data '''
-params_path = '../Parameters'
+params_path = './Models'
 raw_file_name = '경략가격집계 - 소,돼지'
 product = "pork"
 product_attribute = "경락가격"

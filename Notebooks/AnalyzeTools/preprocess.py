@@ -68,14 +68,14 @@ def featureSelection(dataframe, features, target, K=None):
         if len(features) > 2:
             K = int(len(features) / 2)
         else:
-            K = len(features)
             print(colored("There are too few features in the data. The raw data features will be used.", 'yellow'))
+            return features
     
     feature_selector = SelectKBest(score_func=f_regression, k=K)
     feature_selector.fit_transform(dataframe[features].values, dataframe[target].values)
 
-    feature_scores=  {k: v for k, v in zip(features, feature_selector.scores_)}
-    print("\nFeature scores:\n  ", feature_scores)
+    feature_scores = [[k, v] for k, v in zip(features, feature_selector.scores_)]
+    print("\nFeature scores:\n  ", pd.DataFrame(feature_scores, columns=['Features', 'Scores']).sort_values('Scores', ascending=False))
 
     k_best_features = list(np.array(features)[feature_selector.get_support()])
     print("\nTOP K features:\n  ", k_best_features)

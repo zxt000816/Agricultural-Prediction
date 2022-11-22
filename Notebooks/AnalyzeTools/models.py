@@ -61,7 +61,9 @@ def support_vector_regression(X, y, search=False, **params):
 
     parameters, base_dir, product, attribute, raw, save = params_extractor(params)
     parameters = parameters if parameters else {
-        'C': [1, 10]
+        'C': [0.1, 1, 100, 1000],
+        'epsilon': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10],
+        'gamma': [0.0001, 0.001, 0.005, 0.1, 1, 3, 5]
     }
 
     model, best_params = best_ml(X, y, model, parameters, base_dir, product, attribute, 'SVR', raw, save)
@@ -77,8 +79,11 @@ def random_forest(X, y, search=False, **params):
     
     parameters, base_dir, product, attribute, raw, save = params_extractor(params)
     parameters = parameters if parameters else {
-        'n_estimators': [100, 150], 
-        'max_depth': [1, 2, 3, 4]
+        'n_estimators': [50, 100, 150], 
+        'max_depth': [3, 5, 7, 9],
+        'max_features': [1, 3, 5, 7, 9],
+        'min_samples_leaf': [1, 2, 3],
+        'min_samples_split': [1, 2, 3],
     }
 
     model, best_params = best_ml(X, y, model, parameters, base_dir, product, attribute, 'RF', raw, save)
@@ -94,8 +99,11 @@ def gradient_boosting(X, y, search=False, **params):
     
     parameters, base_dir, product, attribute, raw, save = params_extractor(params)
     parameters = parameters if parameters else {
-        'n_estimators': [100, 150], 
-        'max_depth': [1, 2, 3, 4]
+        'n_estimators': [50, 100, 150], 
+        'max_depth': [3, 5, 7, 9],
+        'max_features': [1, 3, 5, 7, 9],
+        'min_samples_leaf': [1, 2, 3],
+        'min_samples_split': [1, 2, 3],
     }
 
     model, best_params = best_ml(X, y, model, parameters, base_dir, product, attribute, 'GB', raw, save)
