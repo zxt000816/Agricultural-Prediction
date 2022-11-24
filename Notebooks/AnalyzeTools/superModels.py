@@ -1,4 +1,4 @@
-import warnings, torch
+import warnings, torch, shutil
 warnings.filterwarnings("ignore")
 
 import pytorch_lightning as pl
@@ -64,6 +64,7 @@ def RNN(
             weights_summary='top',
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
+            check_val_every_n_epoch=5,
             default_root_dir=saving_dir,
         )
 
@@ -130,23 +131,48 @@ def TFT(
     val_dataloader = validation.to_dataloader(train=False, batch_size=batch_size, num_workers=0)
 
     if not best_model_path:
+        # create study
+        study = optimize_hyperparameters(
+            train_dataloader,
+            val_dataloader,
+            model_path=saving_dir,
+            n_trials=10,
+            max_epochs=50,
+            gradient_clip_val_range=(0.01, 1.0),
+            hidden_size_range=(8, 128),
+            hidden_continuous_size_range=(8, 128),
+            attention_head_size_range=(1, 4),
+            learning_rate_range=(0.001, 0.1),
+            dropout_range=(0.1, 0.3),
+            trainer_kwargs=dict(limit_train_batches=30),
+            reduce_on_plateau_patience=4,
+            use_learning_rate_finder=False,  # use Optuna to find ideal learning rate or use in-built learning rate finder
+            log_dir=saving_dir
+        )
+
+        best_params = study.best_params
+        shutil.rmtree(saving_dir)
+
         early_stop_callback = EarlyStopping(monitor="val_loss", verbose=False, mode="min")
         lr_logger = LearningRateMonitor()  # log the learning rate
 
         trainer = pl.Trainer(
-            max_epochs=100,
+            max_epochs=50,
             gpus=0,
             weights_summary="top",
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
+            check_val_every_n_epoch=5,
             default_root_dir=saving_dir,
         )
 
         tft = TemporalFusionTransformer.from_dataset(
             training,
-            hidden_size=128,
-            attention_head_size=4,
-            dropout=0.1,
+            hidden_size=best_params.get('hidden_size'),
+            attention_head_size=best_params.get('attention_head_size'),
+            hidden_continuous_size=best_params.get('hidden_continuous_size'),
+            learning_rate=best_params.get('learning_rate'),
+            dropout=best_params.get('dropout'),
             output_size=1,# 7 quantiles by default
             loss=MAPE(),
             log_interval=10,  # uncomment for learning rate finder and otherwise, e.g. to 10 for logging every 10 batches
@@ -217,6 +243,7 @@ def DEEPAR(
             weights_summary="top",
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
+            check_val_every_n_epoch=5, 
             default_root_dir=saving_dir,
         )
 

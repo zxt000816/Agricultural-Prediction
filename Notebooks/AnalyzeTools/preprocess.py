@@ -22,15 +22,15 @@ def preprocessData(dataframe, time_col, target, prepared=False, fs=True, parse_d
 
         # step 3
         fillNa(df, features)
-
+    
     # step 4
     if fs:
         features = featureSelection(df, features, target)
-
+    
     # step 5
     if not prepared:
         features = filterSameCols(df, features)
-
+    
     df.index = range(len(df))
     # parse date
     if parse_date:
@@ -99,7 +99,7 @@ def filterSameCols(dataframe, features, shreshold=0.8):
                 else:
                     filter[j] = False
 
-    return np.array(features)[filter].tolist()[:-1]
+    return np.array(features)[filter].tolist()
 
 def dateParser(dataframe, time_col):
     dataframe[time_col] = pd.to_datetime(dataframe[time_col])

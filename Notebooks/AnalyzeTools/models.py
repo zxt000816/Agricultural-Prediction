@@ -7,6 +7,9 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 from .prepare import read_best_params, save_best_params
 import pmdarima as pm
+from statsmodels.tsa.arima.model import ARIMA
+
+
 
 def file_saver(base_dir, product, attribute, model_name, raw):
     file_name = f"Best_{model_name}.json"
@@ -63,9 +66,15 @@ def HyperparamsTuning(study, obj, n_trails, patience=3, verbose=True):
     
     return study
 
-def autoregressive_integrated_moving_average(y_train):
-    model = pm.auto_arima(y_train, error_action='ignore', suppress_warnings=True, stepwise=False, seasonal=False)
-    return model
+def autoregressive_integrated_moving_average(y_train, y_test, step=1):
+    SARIMA_model = pm.auto_arima(y_train, error_action='ignore', suppress_warnings=True, stepwise=False, seasonal=False)
+    predictions = []
+
+    for i in range(len(y_test)):
+        model = ARIMA(np.append(y_train, y_test[:i]), order=SARIMA_model.order).fit()
+        predictions.append(model.forecast(step)[0])
+    
+    return np.array(predictions)
 
 def linear_regression(X, y):
     model = LinearRegression()
@@ -129,7 +138,7 @@ def support_vector_regression(X, y, search=False, save=False, **params):
     if file_existed:
         print("--> Use the existed best parameters!")
         best_params = read_best_params(file_path)
-        print(f"\nBest parameter for Random forest is:\n  {best_params}")
+        print(f"\nBest parameter for SVR is:\n  {best_params}")
         model = SVR(
             C=best_params.get('C'),
             gamma=best_params.get('gamma'),
@@ -144,7 +153,7 @@ def support_vector_regression(X, y, search=False, save=False, **params):
     study = optuna.create_study(direction='maximize', sampler=optuna.samplers.TPESampler())
     study = HyperparamsTuning(study, obj, 30, verbose=False)
     best_params = study.best_params
-    print(f"\nBest parameter for Random forest is:\n  {best_params}")
+    print(f"\nBest parameter for SVR is:\n  {best_params}")
     if save:
         save_best_params(best_params, file_path)
 
@@ -307,7 +316,7 @@ def gradient_boosting(X, y, search=False, save=False, **params):
     if file_existed:
         print("--> Use the existed best parameters!")
         best_params = read_best_params(file_path)
-        print(f"\nBest parameter for Random forest is:\n  {best_params}")
+        print(f"\nBest parameter for Gradient Boosting is:\n  {best_params}")
         model = GradientBoostingRegressor(
             random_state=123,
             n_estimators=best_params.get('n_estimators'),
@@ -324,7 +333,7 @@ def gradient_boosting(X, y, search=False, save=False, **params):
     study = optuna.create_study(direction='maximize', sampler=optuna.samplers.TPESampler())
     study = HyperparamsTuning(study, obj, 30, verbose=False)
     best_params = study.best_params
-    print(f"\nBest parameter for Random forest is:\n  {best_params}")
+    print(f"\nBest parameter for Gradient Boosting is:\n  {best_params}")
     if save:
         save_best_params(best_params, file_path)
 
