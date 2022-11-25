@@ -103,8 +103,8 @@ def best_dl(X_train, y_train, X_test, y_test, _model, **others):
     return _model(X_train, y_train, **best_params), ret_best_params
 
 def save_best_params(best_params, file_path):
-        with open(file_path, 'w') as fp:
-            json.dump(best_params, fp)
+    with open(file_path, 'w') as fp:
+        json.dump(best_params, fp)
 
 # Version 1    
 # def read_best_params(file_path, model_type='NDL'):
@@ -177,9 +177,9 @@ def make_dataset(X_arr, y_arr, future, past):
         y.append(y_arr[i+future-1, [-1]])
     return np.array(X, dtype=np.float16), np.array(y, dtype=np.float16)
 
-def pathForSavingModels(product, product_attribute, raw_file_name, model):
+def pathForSavingModels(product, product_attribute, raw_file_name, model, predict_type='single'):
     current_work_path = os.getcwd()
-    save_path = f"{current_work_path}/Models/{product}/{product_attribute}/{raw_file_name}/{model}"
+    save_path = f"{current_work_path}/Models/{predict_type}/{product}/{product_attribute}/{raw_file_name}/{model}"
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)

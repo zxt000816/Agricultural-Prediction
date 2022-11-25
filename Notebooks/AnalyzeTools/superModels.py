@@ -26,7 +26,6 @@ def RNN(
     batch_size,
     saving_dir,
     cell='LSTM'
-
 ):
     best_model_path = retriveBestModelPath(saving_dir)
 
