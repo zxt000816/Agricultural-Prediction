@@ -8,28 +8,62 @@ import matplotlib.pyplot as plt
 import json, os, torch
 import numpy as np
 
-def model_eval(Y_true, Y_predict, stdout=False, vis=False, ret=False, **params):
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.templates.default = "plotly_white"
+
+plot_template = dict(
+    layout=go.Layout({
+        'font_size': 18,
+        'xaxis_title_font_size': 18,
+        'yaxis_title_font_size': 18,
+    })
+)
+
+def model_eval(Y_true, Y_predict, X_axis, stdout=False, vis=False, ret=False, beautiful=True, **params):
     if not params:
         MAPE, RSQUARE=  mape(Y_true, Y_predict), R2(Y_true, Y_predict)
     else:
         scaler = params['scaler']
-        
         Y_true = scaler.inverse_transform(Y_true.reshape(-1, 1))
         Y_predict = scaler.inverse_transform(Y_predict.reshape(-1, 1))
         MAPE, RSQUARE = mape(Y_true, Y_predict), R2(Y_true, Y_predict)
     if stdout:
         print(f"MAPE: {MAPE} R square: {RSQUARE}")
     if vis:
-        vis_result(Y_true, Y_predict)
+        if beautiful:
+            beautiful_vis_reult(Y_true.ravel(), Y_predict.ravel(), X_axis)
+        else:
+            vis_result(Y_true, Y_predict, X_axis)
     if ret:
         return MAPE, RSQUARE
 
-def vis_result(Y_true, Y_predict):
+def vis_result(Y_true, Y_predict, X_axis):
     plt.figure(figsize=(10, 6))
-    plt.plot(Y_true, label='Actual')
-    plt.plot(Y_predict, label='Predict')
+    plt.plot(X_axis, Y_true, label='Actual')
+    plt.plot(X_axis, Y_predict, label='Predict')
     plt.legend()
     plt.show()
+
+def beautiful_vis_reult(Y_true, Y_predict, X_axis):
+    fig = go.Figure()
+    fig.add_scatter(x=X_axis, y=Y_true, mode='lines', name='실제')
+    fig.add_scatter(x=X_axis, y=Y_predict, mode='lines', name='예측')
+    fig.update_layout(
+        template=plot_template,
+        xaxis_title="일자",
+        yaxis_title="가격", 
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01
+        ),
+        width=1000,
+        height=600
+    )
+    fig.show()
 
 def best_dl(X_train, y_train, X_test, y_test, _model, **others):
     hidden_sz_ls = others.get('hidden_sz') if others.get('hidden_sz') else [16, 32, 64, 128, 256]

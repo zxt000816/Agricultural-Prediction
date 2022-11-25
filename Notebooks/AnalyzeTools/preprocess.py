@@ -32,6 +32,7 @@ def preprocessData(dataframe, time_col, target, prepared=False, fs=True, parse_d
         features = filterSameCols(df, features)
     
     df.index = range(len(df))
+    print(f"\n-->Final features:\n  {features}")
     # parse date
     if parse_date:
         dateParser(df, time_col)
@@ -75,10 +76,10 @@ def featureSelection(dataframe, features, target, K=None):
     feature_selector.fit_transform(dataframe[features].values, dataframe[target].values)
 
     feature_scores = [[k, v] for k, v in zip(features, feature_selector.scores_)]
-    print("\nFeature scores:\n  ", pd.DataFrame(feature_scores, columns=['Features', 'Scores']).sort_values('Scores', ascending=False))
+    print("\n-->Feature scores:\n  ", pd.DataFrame(feature_scores, columns=['Features', 'Scores']).sort_values('Scores', ascending=False))
 
     k_best_features = list(np.array(features)[feature_selector.get_support()])
-    print("\nTOP K features:\n  ", k_best_features)
+    print("\n-->TOP K features:\n  ", k_best_features)
 
     return k_best_features
 

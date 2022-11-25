@@ -47,7 +47,7 @@ def RNN(
     validation = TimeSeriesDataSet.from_dataset(
         training, 
         data, 
-        min_prediction_idx=training.index.time.max() + 1,
+        min_prediction_idx=training.index.time.max() + 1 + max_encoder_length - 1,
         stop_randomization=True
     )
 
@@ -64,7 +64,7 @@ def RNN(
             weights_summary='top',
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
-            check_val_every_n_epoch=5,
+            check_val_every_n_epoch=3,
             default_root_dir=saving_dir,
         )
 
@@ -123,7 +123,7 @@ def TFT(
     validation = TimeSeriesDataSet.from_dataset(
         training, 
         data, 
-        min_prediction_idx=training.index.time.max() + 1,
+        min_prediction_idx=training.index.time.max() + 1 + max_encoder_length - 1,
         stop_randomization=True
     )
 
@@ -162,7 +162,7 @@ def TFT(
             weights_summary="top",
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
-            check_val_every_n_epoch=5,
+            check_val_every_n_epoch=3,
             default_root_dir=saving_dir,
         )
 
@@ -226,7 +226,7 @@ def DEEPAR(
     validation = TimeSeriesDataSet.from_dataset(
         training, 
         data, 
-        min_prediction_idx=training.index.time.max() + 1,
+        min_prediction_idx=training.index.time.max() + 1 + max_encoder_length - 1,
         stop_randomization=True
     )
 
@@ -243,7 +243,7 @@ def DEEPAR(
             weights_summary="top",
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
-            check_val_every_n_epoch=5, 
+            check_val_every_n_epoch=3, 
             default_root_dir=saving_dir,
         )
 
