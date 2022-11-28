@@ -23,7 +23,7 @@ def dataManager(file_name, product, product_type, target):
                 target=target
             )
         if file_name == "축산유통정보 - 소비자가격":
-            # product_type can select from [4301, 4304, 1, 4401, 4402, 9901, 43, 9902, 6, 4034, 8, 13, 3, 430, 11]
+            # product_type can select from [4301, 4401]
             # target must be DLPC
             df, product_and_product_type, product_attribute = beef_2(
                 product_type=product_type, 
@@ -56,7 +56,7 @@ def dataManager(file_name, product, product_type, target):
             )
 
         if file_name == "(중)축산유통정보 - 소비자가격":
-            # product_type can select from [4301, 4304, 1, 4401, 4402, 9901, 43, 9902, 6, 4034, 8, 13, 3, 430, 11]
+            # product_type can select from [4304, 4402]
             # target must be DLPC
             df, product_and_product_type, product_attribute = pork_2(
                 product_type=product_type, 

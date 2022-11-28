@@ -44,7 +44,7 @@ def beef_2(
         'BMS_NO', 'MGR_ABATT_CODE', 'ABATT_CODE', 'POSTN_SPRT_CODE'
     ]  
 ):
-    product_types = [4301, 4304, 1, 4401, 4402, 9901, 43, 9902, 6, 4034, 8, 13, 3, 430, 11]
+    product_types = [4301, 4401]
     targets = ['DLPC']
     if target not in targets:
         raise ValueError("Currently, only DLPC is supported!")
@@ -59,7 +59,12 @@ def beef_2(
     df['TRN_DT'] = df['TRN_DT'].apply(lambda x: "20" + "-".join(x.split("/")))
     df.rename(columns={'TRN_DT': 'date'}, inplace=True)
 
-    return df, f"beef(CTSED_CODE={product_type})", "소매가격"
+    if product_type == 4301:
+        product_and_product_type = "beef(CTSED_CODE=4301(소))"
+    if product_type == 4401:
+        product_and_product_type = "beef(CTSED_CODE=4401(수입 소고기))"
+    
+    return df, product_and_product_type, "소매가격"
 
 
 # 축평원_소 수입 소매가격.xlsx

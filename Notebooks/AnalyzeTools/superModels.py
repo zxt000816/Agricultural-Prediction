@@ -7,6 +7,7 @@ pl.seed_everything(123)
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
+from pytorch_forecasting.data import NaNLabelEncoder
 from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer, DeepAR, RecurrentNetwork, GroupNormalizer
 from pytorch_forecasting.metrics import MAPE, NormalDistributionLoss, QuantileLoss, SMAPE
 
@@ -41,6 +42,10 @@ def RNN(
         time_varying_unknown_categoricals=time_varying_unknown_categoricals,
         time_varying_known_reals=time_varying_known_reals,
         time_varying_unknown_reals=[target],
+        categorical_encoders={
+            "month": NaNLabelEncoder().fit(data.month),
+            "week": NaNLabelEncoder().fit(data.week)
+        },
     )
 
     validation = TimeSeriesDataSet.from_dataset(
@@ -117,6 +122,10 @@ def TFT(
         time_varying_unknown_categoricals=time_varying_unknown_categoricals,
         time_varying_known_reals=time_varying_known_reals,
         time_varying_unknown_reals=time_varying_unknown_reals,
+        categorical_encoders={
+            "month": NaNLabelEncoder().fit(data.month),
+            "week": NaNLabelEncoder().fit(data.week)
+        },
     )
 
     validation = TimeSeriesDataSet.from_dataset(
@@ -217,9 +226,10 @@ def DEEPAR(
         time_varying_known_reals=time_varying_known_reals,
         time_varying_unknown_reals=[target],
         target_normalizer=GroupNormalizer(groups=group),
-        add_relative_time_idx=False,
-        add_target_scales=True,
-        randomize_length=None,
+        categorical_encoders={
+            "month": NaNLabelEncoder().fit(data.month),
+            "week": NaNLabelEncoder().fit(data.week)
+        },
     )
 
     validation = TimeSeriesDataSet.from_dataset(

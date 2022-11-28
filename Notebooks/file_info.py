@@ -7,7 +7,7 @@ product_object = {
             "targets": ["MAX_COST_AMT", "MIN_COST_AMT"]
         },
         "(중)축산유통정보 - 소비자가격": {
-            "product_types": [4301, 4304, 1, 4401, 4402, 9901, 43, 9902, 6, 4034, 8, 13, 3, 430, 11],
+            "product_types": [4304, 4402],
             "targets": ['DLPC']
         },
         "축평원_돼지 삼겹살 소매가격": {
@@ -25,7 +25,7 @@ product_object = {
             "targets": ["MAX_COST_AMT", "MIN_COST_AMT"]
         },
         "축산유통정보 - 소비자가격": {
-            "product_types": [4301, 4304, 1, 4401, 4402, 9901, 43, 9902, 6, 4034, 8, 13, 3, 430, 11],
+            "product_types": [4301, 4401],
             "targets": ["DLPC"]
         },
         "축평원_소 수입 소매가격": {

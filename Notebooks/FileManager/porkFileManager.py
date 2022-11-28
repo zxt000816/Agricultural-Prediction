@@ -45,7 +45,7 @@ def pork_2(
         'BMS_NO', 'MGR_ABATT_CODE', 'ABATT_CODE', 'POSTN_SPRT_CODE'
     ]
 ):
-    product_types = [4301, 4304, 1, 4401, 4402, 9901, 43, 9902, 6, 4034, 8, 13, 3, 430, 11]
+    product_types = [4304, 4402]
     targets = ['DLPC']
     if target not in targets:
         raise ValueError("Currently, only DLPC is supported!")
@@ -59,7 +59,12 @@ def pork_2(
     df['TRN_DT'] = df['TRN_DT'].apply(lambda x: "20" + "-".join(x.split("/")))
     df.rename(columns={'TRN_DT': 'date'}, inplace=True)
 
-    return df, f"pork(CTSED_CODE={product_type})", "소매가격"
+    if product_type == 4304:
+        product_and_product_type = "beef(CTSED_CODE=4304(돼지))"
+    if product_type == 4402:
+        product_and_product_type = "beef(CTSED_CODE=4402(수입 돼지고기))"
+
+    return df, product_and_product_type, "소매가격"
 
 # /pork/축평원_돼지 삼겹살 소매가격.xlsx
 def pork_3(
