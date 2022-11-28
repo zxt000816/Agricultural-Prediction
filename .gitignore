@@ -1,3 +1,5 @@
 Data/
 .vscode/
+Notebooks/FileManager/__pycache__/
 Notebooks/AnalyzeTools/__pycache__/
+Notebooks/Models/
