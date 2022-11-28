@@ -44,6 +44,8 @@ def preprocessData(dataframe, time_col, target, prepared=False, fs=True, parse_d
 
 def removeNoCorrCols(dataframe, target):
     features = dataframe.corr()[target].dropna().index.tolist()
+    if not features:
+        raise ValueError("No features correlated with the target!")
     features.remove(target)
 
     return features
