@@ -5,7 +5,7 @@ from sklearn.metrics import mean_absolute_percentage_error as mape
 from sklearn.metrics import r2_score as R2
 
 import matplotlib.pyplot as plt
-import json, os, torch
+import json, os, torch, copy
 import numpy as np
 
 import plotly.express as px
@@ -121,8 +121,10 @@ def read_best_params(file_path):
         model_best_params = json.load(f)
         return model_best_params
 
-def data_split(dataframe, input_cols, output, train_size, scaling=False, **params):
+def data_split(dataframe, input_features, output, train_size, scaling=False, **params):
     data = dataframe.copy()
+    input_cols = copy.deepcopy(input_features)
+    
     input_scaler, output_scaler = StandardScaler(), StandardScaler()
 
     if params.get('Model') == 'ML':

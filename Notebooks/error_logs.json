@@ -1,0 +1,23 @@
+{
+    "8/63__['pork', '(중)축산유통정보 - 소비자가격', 9901, 'DLPC']": "\"Unknown category '5' encountered. Set `add_nan=True` to allow unknown categories\"",
+    "9/63__['pork', '(중)축산유통정보 - 소비자가격', 43, 'DLPC']": "list.remove(x): x not in list",
+    "10/63__['pork', '(중)축산유통정보 - 소비자가격', 9902, 'DLPC']": "Cannot have number of splits n_splits=5 greater than the number of samples: n_samples=4.",
+    "11/63__['pork', '(중)축산유통정보 - 소비자가격', 6, 'DLPC']": "list.remove(x): x not in list",
+    "12/63__['pork', '(중)축산유통정보 - 소비자가격', 4034, 'DLPC']": "With n_samples=1, test_size=0.19999999999999996 and train_size=None, the resulting train set will be empty. Adjust any of the aforementioned parameters.",
+    "13/63__['pork', '(중)축산유통정보 - 소비자가격', 8, 'DLPC']": "list.remove(x): x not in list",
+    "14/63__['pork', '(중)축산유통정보 - 소비자가격', 13, 'DLPC']": "Cannot find best paramters! Please reset parameters or check data!",
+    "15/63__['pork', '(중)축산유통정보 - 소비자가격', 3, 'DLPC']": "filters should not remove entries all entries - check encoder/decoder lengths and lags",
+    "16/63__['pork', '(중)축산유통정보 - 소비자가격', 430, 'DLPC']": "list.remove(x): x not in list",
+    "17/63__['pork', '(중)축산유통정보 - 소비자가격', 11, 'DLPC']": "list.remove(x): x not in list",
+    "32/63__['beef', '축산유통정보 - 소비자가격', 4402, 'DLPC']": "element 0 of tensors does not require grad and does not have a grad_fn",
+    "33/63__['beef', '축산유통정보 - 소비자가격', 9901, 'DLPC']": "\"Unknown category '5' encountered. Set `add_nan=True` to allow unknown categories\"",
+    "34/63__['beef', '축산유통정보 - 소비자가격', 43, 'DLPC']": "list.remove(x): x not in list",
+    "35/63__['beef', '축산유통정보 - 소비자가격', 9902, 'DLPC']": "Cannot have number of splits n_splits=5 greater than the number of samples: n_samples=4.",
+    "36/63__['beef', '축산유통정보 - 소비자가격', 6, 'DLPC']": "list.remove(x): x not in list",
+    "37/63__['beef', '축산유통정보 - 소비자가격', 4034, 'DLPC']": "With n_samples=1, test_size=0.19999999999999996 and train_size=None, the resulting train set will be empty. Adjust any of the aforementioned parameters.",
+    "38/63__['beef', '축산유통정보 - 소비자가격', 8, 'DLPC']": "list.remove(x): x not in list",
+    "39/63__['beef', '축산유통정보 - 소비자가격', 13, 'DLPC']": "Cannot find best paramters! Please reset parameters or check data!",
+    "40/63__['beef', '축산유통정보 - 소비자가격', 3, 'DLPC']": "filters should not remove entries all entries - check encoder/decoder lengths and lags",
+    "41/63__['beef', '축산유통정보 - 소비자가격', 430, 'DLPC']": "list.remove(x): x not in list",
+    "42/63__['beef', '축산유통정보 - 소비자가격', 11, 'DLPC']": "list.remove(x): x not in list"
+}
