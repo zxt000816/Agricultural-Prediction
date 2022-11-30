@@ -60,9 +60,9 @@ def pork_2(
     df.rename(columns={'TRN_DT': 'date'}, inplace=True)
 
     if product_type == 4304:
-        product_and_product_type = "beef(CTSED_CODE=4304(돼지))"
+        product_and_product_type = "pork(CTSED_CODE=4304(돼지))"
     if product_type == 4402:
-        product_and_product_type = "beef(CTSED_CODE=4402(수입 돼지고기))"
+        product_and_product_type = "pork(CTSED_CODE=4402(수입 돼지고기))"
 
     return df, product_and_product_type, "소매가격"
 

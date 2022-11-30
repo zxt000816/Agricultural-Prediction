@@ -11,6 +11,8 @@ def preprocessData(dataframe, time_col, target, prepared=False, fs=True, parse_d
     # if fs (feature selection) set as False, skip step 4
 
     df = dataframe.copy()
+    df[target] = df[target].apply(lambda x: np.nan if x == 0 else x)
+    df[target] = df[target].interpolate(method='linear', limit_direction='both')
     
     if not prepared:
         # step 1
