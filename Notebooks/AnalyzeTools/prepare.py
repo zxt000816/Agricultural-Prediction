@@ -7,6 +7,7 @@ from sklearn.metrics import r2_score as R2
 import matplotlib.pyplot as plt
 import json, os, torch, copy
 import numpy as np
+from math import floor
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -121,11 +122,23 @@ def read_best_params(file_path):
         model_best_params = json.load(f)
         return model_best_params
 
-def data_split(dataframe, input_features, output, train_size, scaling=False, **params):
+def data_split(dataframe, input_features, output, test_size, scaling=False, **params):
     data = dataframe.copy()
     input_cols = copy.deepcopy(input_features)
-    
+    print(data.shape)
+
     input_scaler, output_scaler = StandardScaler(), StandardScaler()
+    if type(test_size) == float:
+        test_size = floor(len(data) * test_size) 
+
+    ### Test ###
+    if scaling:
+        input_scaler.fit(data[input_features][:-1*test_size])
+        output_scaler.fit(data[[output]][:-1*test_size])
+
+        data[input_features] = input_scaler.transform(data[input_features])
+        data[[output]] = output_scaler.transform(data[[output]])
+    ### Test ###
 
     if params.get('Model') == 'ML':
         target = f'Future_{output}'
@@ -134,19 +147,20 @@ def data_split(dataframe, input_features, output, train_size, scaling=False, **p
 
         input_cols.append(output)
 
+        print(data.shape)
         X_train, X_test, y_train, y_test = train_test_split(
             data[input_cols].values, 
             data[target].values, 
-            random_state=0, 
-            test_size=1-train_size,
+            test_size=test_size,
             shuffle=False
         )
         print(f"X_train: {X_train.shape} y_train: {y_train.shape} X_test: {X_test.shape} y_test: {y_test.shape}")
 
         if scaling:
-            X_train, y_train = input_scaler.fit_transform(X_train), output_scaler.fit_transform(y_train.reshape(-1,1))
-            X_test, y_test = input_scaler.transform(X_test), output_scaler.transform(y_test.reshape(-1,1))
-            return X_train, X_test, y_train.ravel(), y_test.ravel(), input_scaler, output_scaler
+            # X_train, y_train = input_scaler.fit_transform(X_train), output_scaler.fit_transform(y_train.reshape(-1,1))
+            # X_test, y_test = input_scaler.transform(X_test), output_scaler.transform(y_test.reshape(-1,1))
+            # return X_train, X_test, y_train.ravel(), y_test.ravel(), input_scaler, output_scaler
+            return X_train, X_test, y_train, y_test, input_scaler, output_scaler
         return X_train, X_test, y_train, y_test
 
     if not scaling:
@@ -179,9 +193,16 @@ def make_dataset(X_arr, y_arr, future, past):
         y.append(y_arr[i+future-1, [-1]])
     return np.array(X, dtype=np.float16), np.array(y, dtype=np.float16)
 
-def pathForSavingModels(product, product_attribute, raw_file_name, model, predict_type='single'):
+def pathForSavingModels(model, **params):
+    base_dir = params.get("base_dir")
+    product_and_product_type = params.get("product_and_product_type")
+    predict_type = params.get("predict_type")
+    step = params.get("step")
+    period = params.get("period")
+    product_attribute = params.get("attribute")
+    raw_file_name = params.get("raw")
     current_work_path = os.getcwd()
-    save_path = f"{current_work_path}/Models/{predict_type}/{product}/{product_attribute}/{raw_file_name}/{model}"
+    save_path = f"{current_work_path}/{base_dir}/{predict_type}/{period}_lead_{step}/{product_and_product_type}/{product_attribute}/{raw_file_name}/{model}"
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)

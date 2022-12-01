@@ -65,7 +65,7 @@ for i, experiment in enumerate(all_experiments):
         # model_eval(y_test, svr_predictions, predictions_x_axis, stdout=stdout, vis=vis, **{'scaler': output_scaler})
 
         print("\nRandom Forest")
-        rf, _ = random_forest(X_train, y_train, search=True, **ml_searchCV_params, **{'scaler': output_scaler})
+        rf, _ = random_forest(X_train, y_train, search=True, **ml_searchCV_params)
         # rf_predictions = rf.predict(X_test)
         # model_eval(y_test, rf_predictions, predictions_x_axis, stdout=stdout, vis=vis, **{'scaler': output_scaler})
 

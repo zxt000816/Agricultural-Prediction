@@ -31,7 +31,7 @@ def preprocessData(dataframe, time_col, target, prepared=False, fs=True, parse_d
     
     # step 5
     if not prepared:
-        features = filterSameCols(df, features)
+        features = filterSameCols(df, features, target)
     
     df.index = range(len(df))
     print(f"\n-->Final features:\n  {features}")
@@ -87,24 +87,27 @@ def featureSelection(dataframe, features, target, K=None):
 
     return k_best_features
 
-def filterSameCols(dataframe, features, shreshold=0.8):
+def filterSameCols(dataframe, features, target, shreshold=0.8):
     length = len(features)
     if length < 2:
         print("Too few features to filter!")
         return features
 
-    filter = np.repeat([True], length)
+    cols_filter = np.repeat([True], length)
     for i in range(length):
-        for j in range(i+1, length):
-            col1, col2 = features[i], features[j]
-            percentage = (dataframe[col1] == dataframe[col2]).sum() / len(dataframe)
-            if percentage > shreshold:
-                if j == length - 1:
-                    filter[i] = False
-                else:
-                    filter[j] = False
+        col1 = features[i]
+        output_sim = (dataframe[col1] == dataframe[target]).sum() / len(dataframe)
+        if output_sim > shreshold:
+            cols_filter[i] = False
+            continue
 
-    return np.array(features)[filter].tolist()
+        for j in range(i+1, length):
+            col2 = features[j]
+            input_sim = (dataframe[col1] == dataframe[col2]).sum() / len(dataframe)
+            if input_sim > shreshold:
+                cols_filter[j] = False
+
+    return np.array(features)[cols_filter].tolist()
 
 def dateParser(dataframe, time_col):
     dataframe[time_col] = pd.to_datetime(dataframe[time_col])

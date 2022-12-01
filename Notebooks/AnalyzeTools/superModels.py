@@ -27,11 +27,13 @@ def RNN(
     time_varying_known_reals, 
     batch_size,
     saving_dir,
-    cell='LSTM'
+    cell='LSTM',
+    training_params={},
 ):
     best_model_path = retriveBestModelPath(saving_dir)
-
     data[time_varying_known_categoricals] = data[time_varying_known_categoricals].astype(str).astype("category")
+    max_epochs = training_params.get('max_epochs') if training_params.get('max_epochs') else 100
+    n_trials = training_params.get('n_trials') if training_params.get('n_trials') else 30
     
     training = TimeSeriesDataSet(
         data[lambda x: x.time_idx <= training_cutoff],
@@ -65,8 +67,8 @@ def RNN(
             train_dataloader,
             val_dataloader,
             model_path=saving_dir,
-            n_trials=30,
-            max_epochs=100,
+            n_trials=n_trials,
+            max_epochs=max_epochs,
             gradient_clip_val_range=(0.01, 1.0),
             hidden_size_range=(8, 128),
             learning_rate_range=(0.001, 0.1),
@@ -84,9 +86,9 @@ def RNN(
         lr_logger = LearningRateMonitor()
 
         trainer = pl.Trainer(
-            max_epochs=100,
+            max_epochs=max_epochs,
             gpus=0,
-            weights_summary='top',
+            enable_model_summary=False,
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
             check_val_every_n_epoch=3,
@@ -131,10 +133,21 @@ def TFT(
     time_varying_unknown_reals,
     batch_size,
     saving_dir,
+    params={},
+    predict_type='single'
 ):
+    if predict_type == 'single':
+        loss_function = MAPE()
+        output_size = 1
+    elif predict_type == 'multiple':
+        loss_function = QuantileLoss()
+        output_size = params.get('output_size') if params.get('output_size') else 7
+    
     best_model_path = retriveBestModelPath(saving_dir)
-
     data[time_varying_known_categoricals] = data[time_varying_known_categoricals].astype(str).astype("category")
+    max_epochs = params.get('max_epochs') if params.get('max_epochs') else 50
+    n_trials = params.get('n_trials') if params.get('n_trials') else 10
+
     training = TimeSeriesDataSet(
         data[lambda x: x.time_idx <= training_cutoff],
         time_idx="time_idx",
@@ -168,8 +181,8 @@ def TFT(
             train_dataloader,
             val_dataloader,
             model_path=saving_dir,
-            n_trials=10,
-            max_epochs=50,
+            n_trials=n_trials,
+            max_epochs=max_epochs,
             gradient_clip_val_range=(0.01, 1.0),
             hidden_size_range=(8, 128),
             hidden_continuous_size_range=(8, 128),
@@ -189,9 +202,9 @@ def TFT(
         lr_logger = LearningRateMonitor()  # log the learning rate
 
         trainer = pl.Trainer(
-            max_epochs=50,
+            max_epochs=max_epochs,
             gpus=0,
-            weights_summary="top",
+            enable_model_summary=False,
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
             check_val_every_n_epoch=3,
@@ -205,8 +218,8 @@ def TFT(
             hidden_continuous_size=best_params.get('hidden_continuous_size'),
             learning_rate=best_params.get('learning_rate'),
             dropout=best_params.get('dropout'),
-            output_size=1,# 7 quantiles by default
-            loss=MAPE(),
+            output_size=output_size,# 7 quantiles by default
+            loss=loss_function,
             log_interval=10,  # uncomment for learning rate finder and otherwise, e.g. to 10 for logging every 10 batches
         )
         # print(f"Number of parameters in network: {tft.size()/1e3:.1f}k")
@@ -235,8 +248,12 @@ def DEEPAR(
     time_varying_known_reals, 
     batch_size,
     saving_dir,
+    training_params={},
 ):
     best_model_path = retriveBestModelPath(saving_dir)
+    data[time_varying_known_categoricals] = data[time_varying_known_categoricals].astype(str).astype("category")
+    max_epochs = training_params.get('max_epochs') if training_params.get('max_epochs') else 100
+    n_trials = training_params.get('n_trials') if training_params.get('n_trials') else 30
 
     data[time_varying_known_categoricals] = data[time_varying_known_categoricals].astype(str).astype("category")
     training = TimeSeriesDataSet(
@@ -274,8 +291,8 @@ def DEEPAR(
             train_dataloader,
             val_dataloader,
             model_path=saving_dir,
-            n_trials=30,
-            max_epochs=100,
+            n_trials=n_trials,
+            max_epochs=max_epochs,
             gradient_clip_val_range=(0.01, 1.0),
             hidden_size_range=(8, 128),
             learning_rate_range=(0.001, 0.1),
@@ -293,9 +310,9 @@ def DEEPAR(
         lr_logger = LearningRateMonitor()  # log the learning rate
 
         trainer = pl.Trainer(
-            max_epochs=100,
+            max_epochs=max_epochs,
             gpus=0,
-            weights_summary="top",
+            enable_model_summary=False,
             callbacks=[lr_logger, early_stop_callback],
             log_every_n_steps=10,
             check_val_every_n_epoch=3, 

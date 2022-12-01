@@ -41,7 +41,7 @@ def optimize_hyperparameters_for_RNN(
     max_epochs: int = 20,
     n_trials: int = 100,
     timeout: float = 3600 * 8.0,  # 8 hours
-    gradient_clip_val_range: Tuple[float, float] = (0.01, 100.0),
+    gradient_clip_val_range: Tuple[float, float] = (0.01, 1.0),
     hidden_size_range: Tuple[int, int] = (16, 265),
     rnn_layers_range: Tuple[int, int] = (1, 4),
     dropout_range: Tuple[float, float] = (0.1, 0.3),
@@ -172,7 +172,7 @@ def optimize_hyperparameters_for_DeepAR(
     max_epochs: int = 20,
     n_trials: int = 100,
     timeout: float = 3600 * 8.0,  # 8 hours
-    gradient_clip_val_range: Tuple[float, float] = (0.01, 100.0),
+    gradient_clip_val_range: Tuple[float, float] = (0.01, 1.0),
     hidden_size_range: Tuple[int, int] = (16, 265),
     rnn_layers_range: Tuple[int, int] = (1, 4),
     dropout_range: Tuple[float, float] = (0.1, 0.3),
