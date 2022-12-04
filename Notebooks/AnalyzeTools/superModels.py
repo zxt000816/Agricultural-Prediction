@@ -133,13 +133,13 @@ def TFT(
     time_varying_unknown_reals,
     batch_size,
     saving_dir,
-    params={},
-    predict_type='single'
+    predict_type,
+    **params,
 ):
-    if predict_type == 'single':
+    if predict_type == 'single' or predict_type == 'multiple':
         loss_function = MAPE()
         output_size = 1
-    elif predict_type == 'multiple':
+    elif predict_type == 'multiple_interval':
         loss_function = QuantileLoss()
         output_size = params.get('output_size') if params.get('output_size') else 7
     

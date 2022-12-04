@@ -83,7 +83,7 @@ def removeFirstNaRows(dataframe, features):
 
 def fillNa(dataframe, features):
     if dataframe[features].isnull().values.any():
-        dataframe.interpolate(method='linear', limit_direction='forward', inplace=True)
+        dataframe[features] = dataframe[features].interpolate(method='linear', limit_direction='forward')
 
 def featureSelection(dataframe, features, target, K=None):
     # use sklearn selectbest function
@@ -205,3 +205,47 @@ def removeOutliers(dataframe, test_size, target_col, vis=True, **params):
     data[target_col] = data[target_col].interpolate(method='linear', limit_direction='both')
 
     return data
+
+def createPeriodData(dataframe, operations, period, time_col):
+    data = dataframe.copy()
+    data[time_col] = pd.to_datetime(data[time_col])
+    data['year'] = data['date'].dt.year
+    data['month'] = data['date'].dt.month
+    data['week'] = data['date'].dt.isocalendar().week
+    data['day'] = data['date'].dt.day
+
+    if period == 'Day':
+        group_cols = ['date']
+    elif period == 'Week':
+        group_cols = ['year', 'week']
+    elif period == 'Month':
+        group_cols = ['year', 'month']
+    
+    agg_operations = createAggOperations(operations, data.columns, group_cols, ['year', 'month', 'week', 'day'])
+    data = data.groupby(group_cols).agg(agg_operations).reset_index()
+    data = data.drop(['year', 'month', 'week', 'day'], axis=1)
+
+    return data
+
+def createAggOperations(baseOperations, columns, group_cols, time_cols):
+    operations = baseOperations.copy()
+    agg_operations = {}
+    processed_cols = []
+
+    for k, v in operations.items():
+        if k != 'others':
+            agg_operations[k] = v
+            processed_cols.append(k)
+        else:
+            for col in columns:
+                if col not in processed_cols:
+                    if col not in time_cols:
+                        agg_operations[col] = operations[k]
+                    else:
+                        agg_operations[col] = 'first'
+        
+    for k in agg_operations.copy():
+        if k in group_cols:
+            agg_operations.pop(k)
+            
+    return agg_operations
