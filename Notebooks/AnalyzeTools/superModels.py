@@ -145,8 +145,12 @@ def TFT(
     
     best_model_path = retriveBestModelPath(saving_dir)
     data[time_varying_known_categoricals] = data[time_varying_known_categoricals].astype(str).astype("category")
+    
     max_epochs = params.get('max_epochs') if params.get('max_epochs') else 50
     n_trials = params.get('n_trials') if params.get('n_trials') else 10
+    hidden_size_range = params.get('hidden_size_range') if params.get('hidden_size_range') else (8, 128)
+    hidden_continuous_size_range = params.get('hidden_continuous_size_range') if params.get('hidden_continuous_size_range') else (8, 128)
+    attention_head_size_range = params.get('attention_head_size_range') if params.get('attention_head_size_range') else (1, 4)
 
     training = TimeSeriesDataSet(
         data[lambda x: x.time_idx <= training_cutoff],
@@ -184,9 +188,9 @@ def TFT(
             n_trials=n_trials,
             max_epochs=max_epochs,
             gradient_clip_val_range=(0.01, 1.0),
-            hidden_size_range=(8, 128),
-            hidden_continuous_size_range=(8, 128),
-            attention_head_size_range=(1, 4),
+            hidden_size_range=hidden_size_range,
+            hidden_continuous_size_range=hidden_continuous_size_range,
+            attention_head_size_range=attention_head_size_range,
             learning_rate_range=(0.001, 0.1),
             dropout_range=(0.1, 0.3),
             trainer_kwargs=dict(limit_train_batches=30),

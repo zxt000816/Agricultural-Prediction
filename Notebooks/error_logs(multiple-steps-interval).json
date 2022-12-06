@@ -1,0 +1,8 @@
+{
+    "4/37_['pork', '(중)축산유통정보 - 소비자가격', 4402, 'DLPC']": "1 (0.10%) of DLPC values were found to be NA or infinite (even after encoding). NA values are not allowed `allow_missing_timesteps` refers to missing rows, not to missing values. Possible strategies to fix the issue are (a) dropping the variable DLPC, (b) using `NaNLabelEncoder(add_nan=True)` for categorical variables, (c) filling missing values and/or (d) optionally adding a variable indicating filled values",
+    "13/37_['beef', '경략가격집계 - 소,돼지', '부분육(쇠고기)', 'MAX_COST_AMT']": "element 0 of tensors does not require grad and does not have a grad_fn",
+    "17/37_['beef', '축평원_소 수입 소매가격', '미국산_갈비', '평균']": "element 0 of tensors does not require grad and does not have a grad_fn",
+    "20/37_['beef', '축평원_소 수입 소매가격', '호주산_갈비', '평균']": "element 0 of tensors does not require grad and does not have a grad_fn",
+    "21/37_['beef', '축평원_소 수입 소매가격', '호주산_갈비', '최고']": "element 0 of tensors does not require grad and does not have a grad_fn",
+    "22/37_['beef', '축평원_소 수입 소매가격', '호주산_갈비', '최저']": "element 0 of tensors does not require grad and does not have a grad_fn"
+}

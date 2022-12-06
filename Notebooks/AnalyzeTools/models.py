@@ -241,7 +241,7 @@ def random_forest(X, y, search=False, save=False, **params):
     print("--> Start searching best parameters!")
     obj = lambda trial: random_forest_objective(trial, X, y)
     study = optuna.create_study(direction='maximize', sampler=optuna.samplers.TPESampler())
-    study = HyperparamsTuning(study, obj, 30, verbose=False)
+    study = HyperparamsTuning(study, obj, 10, verbose=False)
     best_params = study.best_params
     print(f"\nBest parameter for Random forest is:\n  {best_params}")
     if save:
@@ -332,7 +332,7 @@ def gradient_boosting(X, y, search=False, save=False, **params):
     print("--> Start searching best parameters!")
     obj = lambda trial: gradient_boosting_objective(trial, X, y)
     study = optuna.create_study(direction='maximize', sampler=optuna.samplers.TPESampler())
-    study = HyperparamsTuning(study, obj, 30, verbose=False)
+    study = HyperparamsTuning(study, obj, 10, verbose=False)
     best_params = study.best_params
     print(f"\nBest parameter for Gradient Boosting is:\n  {best_params}")
     if save:

@@ -46,7 +46,7 @@ for i, experiment in enumerate(all_experiments):
 
             # prepare dataset for statistics and Macnhine models
             ml_split_params = {'Model': 'ML', 'Future': max_prediction_length}
-            X_train, X_test, y_train, y_test, input_scaler, output_scaler = data_split(df, input_features, target, test_size, scaling=True, **ml_split_params)
+            X_train, X_test, y_train, y_test, input_scaler, output_scaler = data_split(data, input_features, target, test_size, scaling=True, **ml_split_params)
 
             ml_searchCV_params = {
                 'base_dir': params_path,
@@ -92,8 +92,15 @@ for i, experiment in enumerate(all_experiments):
 
             training_cutoff = floor(len(data) * (1-test_size)) if type(test_size) == float else len(data) - test_size
 
-            max_encoder_length = 30 # 7, 14, 30, 60, 120
-            batch_size = 64
+            if period == 'Day':
+                max_encoder_length = 30
+                batch_size = 64 
+            elif period == 'Week':
+                max_encoder_length = 15
+                batch_size = 32
+            elif period == 'Month':
+                max_encoder_length = 7
+                batch_size = 16
 
             group = ['group']
             time_varying_known_categoricals = ['month', 'week']
@@ -125,7 +132,7 @@ for i, experiment in enumerate(all_experiments):
                 time_varying_unknown_categoricals,
                 time_varying_known_reals,
                 batch_size,
-                pathForSavingModels(product_and_product_type, product_attribute, raw_file_name, 'LSTM'),
+                pathForSavingModels('LSTM', **dl_searchCV_params),
                 'LSTM',
                 training_params
             )
@@ -135,7 +142,7 @@ for i, experiment in enumerate(all_experiments):
             # model_eval(actuals, lstm_predictions, predictions_x_axis, stdout=True, vis=True)
 
             print("\nGRU")
-            training_params = {'max_epochs': 100, 'n_trials': 30}
+            training_params = {'max_epochs': 100, 'n_trials': 10}
             gru, val_dataloader = RNN(
                 data_cp,
                 training_cutoff,
@@ -147,7 +154,7 @@ for i, experiment in enumerate(all_experiments):
                 time_varying_unknown_categoricals,
                 time_varying_known_reals,
                 batch_size,
-                pathForSavingModels(product_and_product_type, product_attribute, raw_file_name, 'GRU'),
+                pathForSavingModels('GRU', **dl_searchCV_params),
                 'GRU',
                 training_params
             )
@@ -157,7 +164,7 @@ for i, experiment in enumerate(all_experiments):
             # model_eval(actuals, gru_predictions, predictions_x_axis, stdout=True, vis=True)
 
             print("\nDeepAR")
-            training_params = {'max_epochs': 100, 'n_trials': 30}
+            training_params = {'max_epochs': 100, 'n_trials': 10}
             deep_ar, val_dataloader = DEEPAR(
                 data_cp,
                 training_cutoff,
@@ -169,7 +176,7 @@ for i, experiment in enumerate(all_experiments):
                 time_varying_unknown_categoricals,
                 time_varying_known_reals,
                 batch_size,
-                pathForSavingModels(product_and_product_type, product_attribute, raw_file_name, 'DEEPAR'),
+                pathForSavingModels('DEEPAR', **dl_searchCV_params),
                 training_params
             )
 

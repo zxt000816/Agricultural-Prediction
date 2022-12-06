@@ -125,20 +125,18 @@ def read_best_params(file_path):
 def data_split(dataframe, input_features, output, test_size, scaling=False, **params):
     data = dataframe.copy()
     input_cols = copy.deepcopy(input_features)
-    print(data.shape)
 
     input_scaler, output_scaler = StandardScaler(), StandardScaler()
     if type(test_size) == float:
         test_size = floor(len(data) * test_size) 
 
-    ### Test ###
     if scaling:
-        input_scaler.fit(data[input_features][:-1*test_size])
+        if len(input_cols) != 0:
+            input_scaler.fit(data[input_cols][:-1*test_size])
+            data[input_cols] = input_scaler.transform(data[input_cols])
         output_scaler.fit(data[[output]][:-1*test_size])
-
-        data[input_features] = input_scaler.transform(data[input_features])
         data[[output]] = output_scaler.transform(data[[output]])
-    ### Test ###
+        
 
     if params.get('Model') == 'ML':
         target = f'Future_{output}'
@@ -147,7 +145,6 @@ def data_split(dataframe, input_features, output, test_size, scaling=False, **pa
 
         input_cols.append(output)
 
-        print(data.shape)
         X_train, X_test, y_train, y_test = train_test_split(
             data[input_cols].values, 
             data[target].values, 

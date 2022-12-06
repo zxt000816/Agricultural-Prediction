@@ -46,7 +46,7 @@ for i, experiment in enumerate(all_experiments):
 
             # prepare dataset for statistics and Macnhine models
             ml_split_params = {'Model': 'ML', 'Future': max_prediction_length}
-            X_train, X_test, y_train, y_test, input_scaler, output_scaler = data_split(df, input_features, target, test_size, scaling=True, **ml_split_params)
+            X_train, X_test, y_train, y_test, input_scaler, output_scaler = data_split(data, input_features, target, test_size, scaling=True, **ml_split_params)
 
             ml_searchCV_params = {
                 'base_dir': params_path,
