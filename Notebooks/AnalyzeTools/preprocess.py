@@ -167,42 +167,57 @@ def fillMissingDates(dataframe, time_col, no_time_cols, period):
 def removeOutliers(dataframe, test_size, target_col, vis=True, **params):
     data = dataframe.copy()
 
-    test_size = floor(len(data) * test_size) if type(test_size) == float else test_size
-    training_data = data[:-1*test_size]
+    if test_size != 0:
+        test_size = floor(len(data) * test_size) if type(test_size) == float else test_size
+        training_data = data[:-1*test_size].copy()
+    else:
+        test_size = len(data)        
+        training_data = data[:test_size].copy()
+
+    
     training_idxs = training_data.index
 
     n_estimators = params.get('n_estimators') if params.get('n_estimators') else 100
     contamination = params.get('contamination') if params.get('contamination') else 0.03
     
+    # for setting y_axis
+    y_min = training_data[target_col].min()
+    y_max = training_data[target_col].max()
+    margin = (y_max-y_min)*0.1
+
     iforest = IsolationForest(n_estimators=n_estimators, contamination=contamination, max_samples='auto')
     prediction = iforest.fit_predict(training_data[[target_col]])
 
     print("Number of outliers detected: {}".format(prediction[prediction < 0].sum()))
     print("Number of normal samples detected: {}".format(prediction[prediction > 0].sum()))
 
-    if vis:
-        normals = []
-        outliers = []
-        for value, label in zip(training_data[target_col].values, prediction):
-            if label not in [1, -1]:
-                print(label)
-            if label == 1:
-                normals.append(value)
-                outliers.append(None)
-            elif label == -1:
-                normals.append(None)
-                outliers.append(value)
-        plt.figure(figsize=(12,7))
-        plt.plot(normals, label='normal')
-        plt.plot(outliers, label='outlier')
-        plt.legend()
-        plt.show()
-    
     for idx, label in zip(training_idxs, prediction):
         if label == -1:
             data.loc[idx, target_col] = np.nan
 
     data[target_col] = data[target_col].interpolate(method='linear', limit_direction='both')
+
+    if vis:
+        raw = training_data[target_col].tolist()
+        normals = []
+        outliers = []
+        for value, label in zip(training_data[target_col].values, prediction):
+            if label == 1:
+                normals.append(value)
+                outliers.append(None)
+            if label == -1:
+                normals.append(None)
+                outliers.append(value)
+        
+        _, ax = plt.subplots(1,2,figsize=(24,7))
+        ax[0].plot(raw, c='blue')
+        ax[0].set_title('Detected outliers')
+        ax[0].scatter(list(range(len(outliers))), outliers, c='red')
+        ax[0].set_ylim(y_min - margin, y_max + margin)
+        ax[1].plot(data.loc[training_idxs, target_col].tolist(), c='blue')
+        ax[1].set_title('After removing outliers')
+        ax[1].set_ylim(y_min - margin if y_min - margin >= 0 else 0, y_max + margin)
+        plt.show()
 
     return data
 

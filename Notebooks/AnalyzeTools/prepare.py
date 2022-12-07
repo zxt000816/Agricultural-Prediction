@@ -22,32 +22,66 @@ plot_template = dict(
     })
 )
 
-def model_eval(Y_true, Y_predict, X_axis, stdout=False, vis=False, ret=False, beautiful=True, **params):
-    if not params:
-        MAPE, RSQUARE=  mape(Y_true, Y_predict), R2(Y_true, Y_predict)
-    else:
-        scaler = params['scaler']
-        Y_true = scaler.inverse_transform(Y_true.reshape(-1, 1))
-        Y_predict = scaler.inverse_transform(Y_predict.reshape(-1, 1))
-        MAPE, RSQUARE = mape(Y_true, Y_predict), R2(Y_true, Y_predict)
+def model_eval(Y_true, Y_predict, X_axis=[], stdout=False, vis=False, ret=False, beautiful=True, interval=False, **params):
     if stdout:
+        if not params:
+            MAPE, RSQUARE=  mape(Y_true, Y_predict), R2(Y_true, Y_predict)
+        else:
+            scaler = params['scaler']
+            Y_true = scaler.inverse_transform(Y_true.reshape(-1, 1))
+            Y_predict = scaler.inverse_transform(Y_predict.reshape(-1, 1))
+            MAPE, RSQUARE = mape(Y_true, Y_predict), R2(Y_true, Y_predict)
         print(f"MAPE: {MAPE} R square: {RSQUARE}")
+
     if vis:
         if beautiful:
             beautiful_vis_reult(Y_true.ravel(), Y_predict.ravel(), X_axis)
         else:
-            vis_result(Y_true, Y_predict, X_axis)
+            vis_result(Y_true, Y_predict, X_axis, interval)
     if ret:
         return MAPE, RSQUARE
 
-def vis_result(Y_true, Y_predict, X_axis):
+def vis_result(Y_true, Y_predict, X_axis=[], interval=False):
+    if len(X_axis) != 0:
+        X_axis = list(range(len(Y_true)))
+
     plt.figure(figsize=(10, 6))
     plt.plot(X_axis, Y_true, label='Actual')
-    plt.plot(X_axis, Y_predict, label='Predict')
+    if interval:
+        interval_plotting(Y_predict, X_axis)
+    else:
+        plt.plot(X_axis, Y_predict, label='Predict')
+
     plt.legend()
     plt.show()
 
-def beautiful_vis_reult(Y_true, Y_predict, X_axis):
+def interval_plotting(loss_results, x=None, mid_point=3):
+    loss_results = np.array(loss_results)
+    if not x:
+        x = list(range(len(loss_results)))
+
+    plt.plot(x, loss_results[:, mid_point], label ='Predict', color='green')
+
+    alpha = [0.6, 0.4, 0.2]
+    num_loop = 3
+    for i in range(num_loop):
+        plt.fill_between(
+            x, 
+            loss_results[:,mid_point-i], loss_results[:,mid_point-i-1], 
+            alpha = alpha[i], 
+            color='green'
+        )
+        plt.fill_between(
+            x, 
+            loss_results[:,mid_point+i], loss_results[:,mid_point+i+1], 
+            alpha = alpha[i], 
+            color='green'
+        )
+
+def beautiful_vis_reult(Y_true, Y_predict, X_axis=[]):
+    if len(X_axis) != 0:
+        X_axis = list(range(len(Y_true)))
+
     fig = go.Figure()
     fig.add_scatter(x=X_axis, y=Y_true, mode='lines', name='실제')
     fig.add_scatter(x=X_axis, y=Y_predict, mode='lines', name='예측')
